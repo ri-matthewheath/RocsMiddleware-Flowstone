@@ -24,6 +24,12 @@ permissions:
   pages: write
   id-token: write
 
+# Opt JS-based actions into Node.js 24 ahead of the June 2026 default
+# switchover, silencing the Node 20 deprecation warning from
+# actions/checkout and actions/upload-pages-artifact.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # Do not let concurrent pushes overwrite each other mid-publish. A new
 # push cancels any in-flight queued run but lets the one actually
 # deploying finish.
