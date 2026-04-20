@@ -7,6 +7,7 @@ edges:
   writes: { from: task, to: file, colour: "#e94560", directed: true }
   indexes: { from: task, to: index, colour: "#e94560", directed: true }
   sends: { from: task, to: service, colour: "#1111dd", directed: true }
+  posts: { from: task, to: api, colour: "#e94560", directed: true }
 nodes:
   machine:  { shape: box }
   service:  { shape: hexagon }

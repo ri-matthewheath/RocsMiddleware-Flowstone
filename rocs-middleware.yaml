@@ -50,10 +50,11 @@ RIVSEM01:
 
 PostgreSQL:
   kind: service
+  
 
 RIVSPROD01:
   kind: machine
-  hosts: [x3rocs, smtp]  
+  hosts: [x3rocs, smtp, PostgreSQL]  
 
 exportmaster-dll:
   kind: service
@@ -61,3 +62,10 @@ exportmaster-dll:
 smtp:
   kind: service
 
+InvoiceExtractor:
+  kind: task
+  selects: [exportmaster.analysis, exportmaster.orderh, exportmaster.orderi, exportmaster.quoteh, x3rocs.customer, x3rocs.invoice_header, x3rocs.uploaded_invoices]
+  upserts: [x3rocs.invoice_header, x3rocs.invoice_line, x3rocs.invoice_attempt ]
+
+InvoiceUploader:
+  posts: [x3api.invoice]
