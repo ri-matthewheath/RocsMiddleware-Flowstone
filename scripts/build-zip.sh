@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # Rebuild RocsMiddleware-Flowstone.zip deterministically from the tracked
-# Markdown notes. Run on every push via .github/workflows/build-zip.yml
+# Markdown notes and YAML graph files. Run on every push via
+# .github/workflows/build-zip.yml
 # so the published zip stays in sync with the source of truth. May also
 # be run by hand for local testing: `./scripts/build-zip.sh`.
 #
@@ -26,14 +27,14 @@ PREFIX="RocsMiddleware-Flowstone"
 mkdir -p "$STAGING/$PREFIX"
 
 mapfile -t FILES < <(
-    git ls-files '*.md' \
+    git ls-files '*.md' '*.yaml' '*.yml' \
         ':(exclude).github/**' \
         ':(exclude)scripts/**' \
         | sort
 )
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
-    echo "error: no markdown files found" >&2
+    echo "error: no markdown or yaml files found" >&2
     exit 1
 fi
 
@@ -56,4 +57,4 @@ rm -f "$OUT"
     done | zip -X -@ "$OUT" > /dev/null
 )
 
-echo "Built $OUT with ${#FILES[@]} notes."
+echo "Built $OUT with ${#FILES[@]} entries."

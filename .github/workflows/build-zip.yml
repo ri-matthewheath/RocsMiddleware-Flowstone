@@ -13,6 +13,8 @@ on:
     branches: [master]
     paths:
       - '**.md'
+      - '**.yaml'
+      - '**.yml'
       - 'scripts/build-zip.sh'
       - '.github/workflows/build-zip.yml'
   workflow_dispatch:
