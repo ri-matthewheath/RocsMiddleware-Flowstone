@@ -27,7 +27,7 @@ x3rocs.customer:
   
 x3rocs.customers_needing_em_update:
   kind: recordset
-  selects: [x3.customer]
+  selects: [x3rocs.customer]
 
 exportmaster:
   kind: database
