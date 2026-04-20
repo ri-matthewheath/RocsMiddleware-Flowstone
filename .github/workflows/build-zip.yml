@@ -1,0 +1,74 @@
+name: Publish RocsMiddleware-Flowstone zip via Pages
+
+# Rebuild RocsMiddleware-Flowstone.zip on every push that touches a
+# note, the build script, or this workflow itself, and publish it
+# through GitHub Pages. flowstone-wasm then fetches it cross-origin
+# from
+# https://ri-matthewheath.github.io/RocsMiddleware-Flowstone/RocsMiddleware-Flowstone.zip
+# — Pages sends Access-Control-Allow-Origin: * by default, which
+# release assets (redirected to Azure blob storage) do not.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**.md'
+      - 'scripts/build-zip.sh'
+      - '.github/workflows/build-zip.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Do not let concurrent pushes overwrite each other mid-publish. A new
+# push cancels any in-flight queued run but lets the one actually
+# deploying finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build RocsMiddleware-Flowstone.zip
+        run: ./scripts/build-zip.sh
+
+      - name: Stage _site/ for Pages
+        run: |
+          mkdir -p _site
+          mv RocsMiddleware-Flowstone.zip _site/
+          cat > _site/index.html <<'EOF'
+          <!DOCTYPE html>
+          <meta charset="UTF-8">
+          <title>RocsMiddleware-Flowstone</title>
+          <style>
+            body { font-family: ui-monospace, 'SF Mono', Menlo, monospace; max-width: 640px; margin: 40px auto; padding: 0 20px; background: #1b1b1b; color: #e8e8e8; }
+            a { color: #6af; }
+            code { background: #111; padding: 1px 4px; border-radius: 2px; }
+          </style>
+          <h1>RocsMiddleware-Flowstone</h1>
+          <p>Auto-built corpus zip from the latest <a href="https://github.com/ri-matthewheath/RocsMiddleware-Flowstone">master</a> branch.</p>
+          <p>Direct download: <a href="RocsMiddleware-Flowstone.zip">RocsMiddleware-Flowstone.zip</a></p>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
