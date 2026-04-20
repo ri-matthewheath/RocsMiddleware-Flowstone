@@ -3,8 +3,9 @@ schema: infra
 X3CustomerPull:
   kind: task
   cadence: 10mins
-  reads: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
-  writes: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount, logs.x3customerpull]
+  selects: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
+  upserts: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
+  writes: [logs.x3customerpull]
 
 x3api.customer:
   kind: api
@@ -40,7 +41,7 @@ EMUpdater:
   kind: task
   cadence: 10mins
   selects: [x3.customers_needing_em_update]
-  writes: [logs-emupdater]
+  writes: [logs.emupdater]
   sends: [exportmaster-dll]
 
 RIVSEM01:
