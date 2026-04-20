@@ -14,7 +14,7 @@ x3db:
   serves: [x3db.bpcustomer]
 
 x3db.bpcustomer:
-  kind: table
+  kind: recordset
 
 x3rocs:
   kind: database
@@ -22,11 +22,11 @@ x3rocs:
   serves: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
 
 x3rocs.customer:
-  kind: table
+  kind: recordset
   
 x3.customers_needing_em_update:
-  kind: view
-  reads: [x3.customer]
+  kind: recordset
+  selects: [x3.customer]
 
 exportmaster:
   kind: database
@@ -34,13 +34,14 @@ exportmaster:
   serves: [exportmaster.customer]
 
 exportmaster.customer:
-  kind: table
+  kind: recordset
 
 EMUpdater:
   kind: task
   cadence: 10mins
-  reads: [x3.customers_needing_em_update]
-  writes: [exportmaster-dll, logs-emupdater]
+  selects: [x3.customers_needing_em_update]
+  writes: [logs-emupdater]
+  sends: [exportmaster-dll]
 
 RIVSEM01:
   kind: machine
@@ -56,4 +57,6 @@ RIVSPROD01:
 exportmaster-dll:
   kind: service
 
+smtp:
+  kind: service
 

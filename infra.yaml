@@ -1,17 +1,16 @@
 edges:
   hosts:  { from: machine, to: service, directed: true }
   serves: { from: database, to: table, directed: true }
-  reads:  { from: api, to: task, colour: "#4a9eff", directed: true }
-  reads:  { from: table, to: task, colour: "#4a9eff", directed: true }
-  reads:  { from: view, to: task, colour: "#4a9eff", directed: true }
-  writes: { from: task, to: table, colour: "#e94560", directed: true }
+  gets:  { from: api, to: task, colour: "#4a9eff", directed: true }
+  selects:  { from: records, to: task, colour: "#4a9eff", directed: true }
+  upserts: { from: task, to: table, colour: "#e94560", directed: true }
   writes: { from: task, to: file, colour: "#e94560", directed: true }
-  writes: { from: task, to: index, colour: "#e94560", directed: true }
-  sends: { from:task, to: service, colour: "#1111dd", directed: true }
+  indexes: { from: task, to: index, colour: "#e94560", directed: true }
+  sends: { from: task, to: service, colour: "#1111dd", directed: true }
 nodes:
   machine:  { shape: box }
   service:  { shape: hexagon }
-  table:    { shape: cylinder }
+  recordset:    { shape: cylinder }
   view:    { shape: cylinder }
   task:     { shape: diamond }
   database: {shape: cylinder }
