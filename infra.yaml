@@ -3,7 +3,7 @@ edges:
   serves: { from: database, to: table, directed: true }
   gets:  { from: api, to: task, colour: "#4a9eff", directed: true }
   selects:  { from: recordset, to: task, colour: "#4a9eff", directed: true }
-  upserts: { from: task, to: table, colour: "#e94560", directed: true }
+  upserts: { from: task, to: recordset, colour: "#e94560", directed: true }
   writes: { from: task, to: file, colour: "#e94560", directed: true }
   indexes: { from: task, to: index, colour: "#e94560", directed: true }
   sends: { from: task, to: service, colour: "#1111dd", directed: true }
