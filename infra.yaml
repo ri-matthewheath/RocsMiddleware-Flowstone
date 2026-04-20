@@ -1,12 +1,17 @@
 edges:
   hosts:  { from: machine, to: service, directed: true }
-  reads:  { from: task, to: endpoint, colour: "#4a9eff", directed: true }
-  writes: { from: task, to: table,    colour: "#e94560", directed: true }
+  serves: { from: database, to: table, directed: true }
+  reads:  { from: {api, table, view}, to: task, colour: "#4a9eff", directed: true }
+  writes: { from: task, to: {table, file, index}, colour: "#e94560", directed: true }
+  sends: { from:ta;, to: service, colour: "#1111dd", directed: true }
 nodes:
   machine:  { shape: box }
   service:  { shape: hexagon }
   table:    { shape: cylinder }
   view:    { shape: cylinder }
-  endpoint: { shape: ellipse }
   task:     { shape: diamond }
   database: {shape: cylinder }
+  index: {shape: ellipse}
+  api: {shape: cloud}
+  dll: {shape: triangle}
+
