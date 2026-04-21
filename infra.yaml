@@ -12,7 +12,7 @@ edges:
   upserts: { from: task, to: recordset, colour: "#e94560", directed: true }
   calls: { from: task, to: storedprocedure, colour: "#e94560", directed: true }
   writes: { from: task, to: file, colour: "magenta", directed: true }
-  indexes: { from: task, to: index, colour: "#e94560", directed: true }
+  docs: { from: task, to: index, colour: "#e94560", directed: true }
   sends: { from: task, to: service, colour: "#dd1111", directed: true }
   posts: { from: task, to: api, colour: "#e94560", directed: true }
 nodes:

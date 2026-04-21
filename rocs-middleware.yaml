@@ -172,7 +172,7 @@ CreditStatus:
 
 CustomerIndexer:
   kind: task
-  indexes: [ex.customer]
+  docs: [ex.customer]
 
 
 
