@@ -18,14 +18,19 @@ exportmaster-dll:
 smtp:
   kind: service
 
-
+x3api: 
+  kind: rest 
+  provides: [x3api.customer, x3api.invoice, x3api.creditstatus]
 
 x3api.customer:
   kind: api
 
 x3api.invoice:
   kind: api
-
+  
+x3api.creditstatus:
+  kind: api
+  
 x3db:
   kind: database
   serves: [x3db.bpcustomer, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
