@@ -10,6 +10,9 @@ X3CustomerPull:
 x3api.customer:
   kind: api
 
+x3api.invoice:
+  kind: api
+
 x3db:
   kind: database
   serves: [x3db.bpcustomer]
@@ -79,8 +82,8 @@ InvoiceExtractor:
 InvoiceUploader:
   kind: task
   posts: [x3api.invoice]
-  selects: [x3rocs.customer, x3rocs.invoice_header, x3rocs.invoice_attempt, x3roc3.uploaded_invoices, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
-  upserts: [x3rocs.invoice_attempt, x3rocs.invoice_line, x3roc3.uploaded_invoices, x3rocs.invoice_header]
+  selects: [x3rocs.customer, x3rocs.invoice_header, x3rocs.invoice_attempt, x3rocs.uploaded_invoices, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
+  upserts: [x3rocs.invoice_attempt, x3rocs.invoice_line, x3rocs.uploaded_invoices, x3rocs.invoice_header]
   writes: [logs.invoiceuploader]
 
 KeycloakUpdater:
