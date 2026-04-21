@@ -28,7 +28,7 @@ x3api.invoice:
 
 x3db:
   kind: database
-  serves: [x3db.bpcustomer]
+  serves: [x3db.bpcustomer, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
 
 x3db.bpcustomer:
   kind: recordset
@@ -45,12 +45,15 @@ x3db.gacentry:
 x3rocs:
   kind: database
   service: PostgreSQL
-  serves: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount, x3rocs.invoice-header, x3rocs.uploaded-invoices, x3rocs.invoice-line, x3rocs.invoice-attempt, x3rocs.customers-needing-em-update ]
+  serves: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount, x3rocs.invoice-header, x3rocs.uploaded-invoices, x3rocs.invoice-line, x3rocs.invoice-attempt, x3rocs.customers-needing-em-update, x3rocs.service-errors, x3rocs.update-contact-keycloak-hash ]
 
 x3rocs.customer:
   kind: recordset
 
 x3rocs.contact:
+  kind: recordset
+
+x3rocs.credit-status:
   kind: recordset
 
 x3rocs.invoice-header:
@@ -72,12 +75,20 @@ x3rocs.uploaded-invoices:
   kind: recordset
 
 x3rocs.customers-needing-em-update:
-  kind: storedprocedure
-  selects: [x3rocs.customer]
+  kind: view
+  views: [x3rocs.customer]
 
 x3rocs.update-contact-keycloak-hash:
   kind: storedprocedure  
-  upserts: [x3rocs.contact]
+  procs: [x3rocs.contact]
+
+x3rocs.customers_needing_elasticsearch_update:
+  kind: view
+  views: [x3rocs.customer]
+
+x3rocs.generate_elasticsearch_customer_json:
+  kind: storedprocedure
+  funcs: [x3rocs.customer]
 
 Exportmaster:
   kind: database
@@ -140,13 +151,26 @@ logs.keycloakupdater:
 logs.x3customerpull:
   kind: file
 
-X3CustomerPull:
+Elasticsearch:
+  kind: database
+  indexes: [es.customer]
+
+es.customer:
+  kind: index
+
+CreditStatus:
   kind: task
-  cadence: 10mins
-  selects: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
-  upserts: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
-  writes: [logs.x3customerpull]
-  
+  selects: [x3rocs.customer, x3rocs.credit-status]
+  calls: [x3rocs.upsert-credit-status]
+  writes: [logs.creditstatus]
+  gets: [x3api.creditstatus]
+
+CustomerIndexer:
+  kind: task
+  indexes: [ex.customer]
+
+
+
 EMUpdater:
   kind: task
   cadence: 10mins
@@ -170,7 +194,15 @@ InvoiceUploader:
 KeycloakUpdater:
   kind: task
   selects: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.keycloak-role, kc.client, x3rocs.contact]
-  upserts: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.user-role-mapping, x3rocs.contact, x3rocs.update-contact-keycloak-hash, x3rocs.service-errors]
+  upserts: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.user-role-mapping, x3rocs.contact, x3rocs.service-errors]
+  calls: [x3rocs.update-contact-keycloak-hash]
   writes: [logs.keycloakupdater]
   sends: [smtp]
+  
+X3CustomerPull:
+  kind: task
+  cadence: 10mins
+  selects: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
+  upserts: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
+  writes: [logs.x3customerpull]
   
