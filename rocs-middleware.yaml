@@ -1,11 +1,24 @@
 schema: infra
 
-X3CustomerPull:
-  kind: task
-  cadence: 10mins
-  selects: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
-  upserts: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
-  writes: [logs.x3customerpull]
+
+RIVSEM01:
+  kind: machine
+  hosts: [Exportmaster, exportmaster-dll]
+
+PostgreSQL:
+  kind: service
+
+RIVSPROD01:
+  kind: machine
+  hosts: [x3rocs, smtp, PostgreSQL]  
+
+exportmaster-dll:
+  kind: service
+
+smtp:
+  kind: service
+
+
 
 x3api.customer:
   kind: api
@@ -46,6 +59,9 @@ x3rocs.invoice-header:
 x3rocs.invoice-line:
   kind: recordset
 
+x3rocs.invoice-attempt:
+  kind: recordset
+
 x3rocs.pricediscount:
   kind: recordset
 
@@ -61,38 +77,82 @@ x3rocs.customers-needing-em-update:
 
 x3rocs.update-contact-keycloak-hash:
   kind: storedprocedure  
+  upserts: [x3rocs.contact]
 
-exportmaster:
+Exportmaster:
   kind: database
   service: Exportmaster
-  serves: [exportmaster.customer, exportmaster.analysis, exportmaster.orderh, exportmaster.orderi, exportmaster.quoteh]
+  serves: [exportmaster.analysis, exportmaster.customer, exportmaster.orderh, exportmaster.orderi, exportmaster.quoteh]
+
+exportmaster.analysis:
+  kind: recordset
 
 exportmaster.customer:
   kind: recordset
 
+exportmaster.quoteh:
+  kind: recordset
+
+exportmaster.orderh:
+  kind: recordset
+
+exportmaster.orderi:
+  kind: recordset
+
+
+Keycloak:
+  kind: database
+  serves: [kc.client, kc.credential, kc.keycloak-role, kc.rocs-heartbeats, kc.user-attribute, kc.user-entity, kc.user-role-mapping]
+
+kc.client:
+    kind: recordset
+
+kc.credential:
+    kind: recordset
+
+kc.keycloak-role:
+    kind: recordset
+
+kc.rocs-heartbeats:
+    kind: recordset
+    
+kc.user-attribute:
+    kind: recordset
+
+kc.user-entity:
+    kind: recordset
+
+kc.user-role-mapping:
+    kind: recordset
+
+logs.emupdater:
+  kind: file
+
+logs.invoiceuploader:
+  kind: file
+
+logs.invoiceextractor:
+  kind: file
+
+logs.keycloakupdater:
+  kind: file
+
+logs.x3customerpull:
+  kind: file
+
+X3CustomerPull:
+  kind: task
+  cadence: 10mins
+  selects: [x3api.customer, x3db.bpcustomer, exportmaster.customer]
+  upserts: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount]
+  writes: [logs.x3customerpull]
+  
 EMUpdater:
   kind: task
   cadence: 10mins
   selects: [x3rocs.customers-needing-em-update]
   writes: [logs.emupdater]
   sends: [exportmaster-dll]
-
-RIVSEM01:
-  kind: machine
-  hosts: [Exportmaster, exportmaster-dll]
-
-PostgreSQL:
-  kind: service
-
-RIVSPROD01:
-  kind: machine
-  hosts: [x3rocs, smtp, PostgreSQL]  
-
-exportmaster-dll:
-  kind: service
-
-smtp:
-  kind: service
 
 InvoiceExtractor:
   kind: task
@@ -113,59 +173,4 @@ KeycloakUpdater:
   upserts: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.user-role-mapping, x3rocs.contact, x3rocs.update-contact-keycloak-hash, x3rocs.service-errors]
   writes: [logs.keycloakupdater]
   sends: [smtp]
-
-Keycloak:
-  kind: database
-  serves: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.keycloak-role, kc.client, kc.user-role-mapping]
-
-kc.rocs-heartbeats:
-    kind: recordset
-    
-kc.user-entity:
-    kind: recordset
-
-kc.user-attribute:
-    kind: recordset
-
-kc.credential:
-    kind: recordset
-
-kc.keycloak-role:
-    kind: recordset
-
-kc.client:
-    kind: recordset
-
-kc.user-role-mapping:
-    kind: recordset
-
-logs.keycloakupdater:
-  kind: file
-
-logs.x3customerpull:
-  kind: file
-
-logs.invoiceuploader:
-  kind: file
-
-logs.invoiceextractor:
-  kind: file
-
-logs.emupdater:
-  kind: file
-
-exportmaster.quoteh:
-  kind: recordset
-
-exportmaster.orderh:
-  kind: recordset
-
-exportmaster.orderi:
-  kind: recordset
-
-exportmaster.analysis:
-  kind: recordset
-
-
-
-
+  
