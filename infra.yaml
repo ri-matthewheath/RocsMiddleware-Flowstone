@@ -12,7 +12,7 @@ nodes:
   machine:  { shape: box }
   service:  { shape: hexagon }
   recordset:    { shape: cylinder }
-  view:    { shape: cylinder }
+  storedprocedure:    { shape: cylinder }
   task:     { shape: diamond }
   database: {shape: cylinder }
   index: {shape: ellipse}

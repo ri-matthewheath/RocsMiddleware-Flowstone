@@ -32,14 +32,35 @@ x3db.gacentry:
 x3rocs:
   kind: database
   service: PostgreSQL
-  serves: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount,x3rocs.invoice_header, x3rocs.uploaded_invoices, x3rocs.invoice_line, x3rocs.invoice_attempt, x3rocs.customers_needing_em_update ]
+  serves: [x3rocs.customer, x3rocs.contact, x3rocs.pricediscount, x3rocs.invoice-header, x3rocs.uploaded-invoices, x3rocs.invoice-line, x3rocs.invoice-attempt, x3rocs.customers-needing-em-update ]
 
 x3rocs.customer:
   kind: recordset
-  
-x3rocs.customers_needing_em_update:
+
+x3rocs.contact:
   kind: recordset
+
+x3rocs.invoice-header:
+  kind: recordset
+
+x3rocs.invoice-line:
+  kind: recordset
+
+x3rocs.pricediscount:
+  kind: recordset
+
+x3rocs.service-errors:
+  kind: recordset
+
+x3rocs.uploaded-invoices:
+  kind: recordset
+
+x3rocs.customers-needing-em-update:
+  kind: storedprocedure
   selects: [x3rocs.customer]
+
+x3rocs.update-contact-keycloak-hash:
+  kind: storedprocedure  
 
 exportmaster:
   kind: database
@@ -89,7 +110,7 @@ InvoiceUploader:
 KeycloakUpdater:
   kind: task
   selects: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.keycloak-role, kc.client, x3rocs.contact]
-  upserts: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.user-role-mapping, x3rocs.contact, x3.update_contact_keycloak_hash, x3rocs.service-errors]
+  upserts: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.user-role-mapping, x3rocs.contact, x3rocs.update-contact-keycloak-hash, x3rocs.service-errors]
   writes: [logs.keycloakupdater]
   sends: [smtp]
 
@@ -97,7 +118,7 @@ Keycloak:
   kind: database
   serves: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.keycloak-role, kc.client, kc.user-role-mapping]
 
-  kc.rocs-heartbeats:
+kc.rocs-heartbeats:
     kind: recordset
     
 kc.user-entity:
@@ -121,6 +142,9 @@ kc.user-role-mapping:
 logs.keycloakupdater:
   kind: file
 
+logs.x3customerpull:
+  kind: file
+
 logs.invoiceuploader:
   kind: file
 
@@ -129,3 +153,19 @@ logs.invoiceextractor:
 
 logs.emupdater:
   kind: file
+
+exportmaster.quoteh:
+  kind: recordset
+
+exportmaster.orderh:
+  kind: recordset
+
+exportmaster.orderi:
+  kind: recordset
+
+exportmaster.analysis:
+  kind: recordset
+
+
+
+
