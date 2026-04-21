@@ -90,4 +90,39 @@ KeycloakUpdater:
   writes: [logs.keycloakupdater]
   sends: [smtp]
 
-  
+Keycloak:
+  kind: database
+  serves: [kc.rocs-heartbeats, kc.user-entity, kc.user-attribute, kc.credential, kc.keycloak-role, kc.client, kc.user-role-mapping]
+
+  kc.rocs-heartbeats:
+    kind: recordset
+    
+kc.user-entity:
+    kind: recordset
+
+kc.user-attribute:
+    kind: recordset
+
+kc.credential:
+    kind: recordset
+
+kc.keycloak-role:
+    kind: recordset
+
+kc.client:
+    kind: recordset
+
+kc.user-role-mapping:
+    kind: recordset
+
+logs.keycloakupdater:
+  kind: file
+
+logs.invoiceuploader:
+  kind: file
+
+logs.invoiceextractor:
+  kind: file
+
+logs.emupdater:
+  kind: file

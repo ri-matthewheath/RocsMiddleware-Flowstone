@@ -18,4 +18,4 @@ nodes:
   index: {shape: ellipse}
   api: {shape: cloud}
   dll: {shape: triangle}
-
+  file: { shape: square }
