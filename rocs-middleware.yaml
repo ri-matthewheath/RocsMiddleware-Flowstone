@@ -73,7 +73,7 @@ exportmaster.customer:
 EMUpdater:
   kind: task
   cadence: 10mins
-  selects: [x3rocs.customers_needing_em_update]
+  selects: [x3rocs.customers-needing-em-update]
   writes: [logs.emupdater]
   sends: [exportmaster-dll]
 
@@ -96,15 +96,15 @@ smtp:
 
 InvoiceExtractor:
   kind: task
-  selects: [exportmaster.analysis, exportmaster.orderh, exportmaster.orderi, exportmaster.quoteh, x3rocs.customer, x3rocs.invoice_header, x3rocs.uploaded_invoices]
-  upserts: [x3rocs.invoice_header, x3rocs.invoice_line, x3rocs.invoice_attempt ]
+  selects: [exportmaster.analysis, exportmaster.orderh, exportmaster.orderi, exportmaster.quoteh, x3rocs.customer, x3rocs.invoice-header, x3rocs.uploaded-invoices]
+  upserts: [x3rocs.invoice-header, x3rocs.invoice-line, x3rocs.invoice-attempt ]
   writes: [logs.invoiceextractor]
 
 InvoiceUploader:
   kind: task
   posts: [x3api.invoice]
-  selects: [x3rocs.customer, x3rocs.invoice_header, x3rocs.invoice_attempt, x3rocs.uploaded_invoices, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
-  upserts: [x3rocs.invoice_attempt, x3rocs.invoice_line, x3rocs.uploaded_invoices, x3rocs.invoice_header]
+  selects: [x3rocs.customer, x3rocs.invoice-header, x3rocs.invoice-attempt, x3rocs.uploaded-invoices, x3db.bpcinvlig, x3db.sinvoice, x3db.gacentry]
+  upserts: [x3rocs.invoice-attempt, x3rocs.invoice-line, x3rocs.uploaded-invoices, x3rocs.invoice-header]
   writes: [logs.invoiceuploader]
 
 KeycloakUpdater:
